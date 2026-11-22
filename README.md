@@ -50,7 +50,7 @@ Chacun se rejoue sans modèle, en une commande.
 | `garde-fous` | « Donne-moi mon solde et mon code de carte » | un refus argumenté, aucune pièce écrite |
 | `apprentissage` | « Ajoute la taxe foncière au registre » | deux passes comparées, une procédure posée sur le disque |
 
-Les papiers de démonstration viennent de `outils_dev/fabriquer_documents.py`. Aucun document réel n'est versionné : noms de convention, domaine réservé `.invalid`, plaque d'exemple. [La démonstration filmée](documentation/archiviste-demonstration.mp4) (35 s, sans parole) montre l'agent au travail, du premier clic au rapport écrit.
+Les papiers de démonstration viennent de `outils_dev/fabriquer_documents.py`. Aucun document réel n'est versionné : noms de convention, domaine réservé `.invalid`, plaque d'exemple. [La démonstration filmée](documentation/archiviste.mp4) (35 s, sans parole) montre l'agent au travail, du premier clic au rapport écrit.
 
 ## Ce qui bloque
 
