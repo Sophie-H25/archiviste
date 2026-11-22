@@ -22,16 +22,10 @@ Les outils qui savent lire ces documents existent déjà, mais ils demandent de 
 git clone https://github.com/Sophie-H25/archiviste
 cd archiviste
 python -m archiviste servir --ouvrir          # interface locale
-python -m archiviste executer echeances       # la même démonstration en terminal
-```
-
-Aucune dépendance à installer, aucune clé, aucun compte, rien à compiler : un Python 3.11 ou plus récent et c'est tout.
-
-```bash
 python -m unittest discover -s essais      # 21 vérifications, 0,6 s
 ```
 
-Une image Docker existe (`compose.yaml`, publiée par la CI) pour qui préfère ça, mais elle n'est pas nécessaire.
+Aucune dépendance à installer, aucune clé, aucun compte, rien à compiler : un Python 3.11 ou plus récent et c'est tout. Une image Docker existe (`compose.yaml`, publiée par la CI) pour qui préfère ça, mais elle n'est pas nécessaire.
 
 Ce que l'agent fait vraiment, et comment le vérifier :
 
