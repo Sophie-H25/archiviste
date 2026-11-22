@@ -1,4 +1,4 @@
-# Rapport de mesure — Classeur
+# Rapport de mesure — Archiviste
 
 > **RAPPORT SIMULÉ — ne mesure rien.** L'endpoint interrogé renvoie des décisions préenregistrées. Ce fichier prouve seulement que le harness s'exécute de bout en bout.
 

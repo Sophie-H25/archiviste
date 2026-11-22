@@ -4,9 +4,9 @@ Rien de spectaculaire n'est promis ici : dix tâches courtes tirées du domaine 
 la démo, une notation par correspondance exacte (jamais un LLM juge), et un
 rapport qui dit ce que les chiffres ne disent pas.
 
-    python -m classeur bench --base-url http://127.0.0.1:11434 --model qwen2.5:3b
+    python -m archiviste bench --base-url http://127.0.0.1:11434 --model qwen2.5:3b
     python mesure/serveur_simule.py --port 8099 &   # endpoint simulé, pour la CI
-    python -m classeur bench --base-url http://127.0.0.1:8099 --out mesure/report-sim.md
+    python -m archiviste bench --base-url http://127.0.0.1:8099 --out mesure/report-sim.md
 """
 
 from __future__ import annotations
@@ -20,9 +20,9 @@ import time
 from pathlib import Path
 from typing import Any
 
-from classeur.moteur.boucle import Contexte, Registre, Atelier, MemoireProcedures
-from classeur.moteur.decisions import PlanificateurModele, list_models
-from classeur.moteur.outils import construire_registre
+from archiviste.moteur.boucle import Contexte, Registre, Atelier, MemoireProcedures
+from archiviste.moteur.decisions import PlanificateurModele, list_models
+from archiviste.moteur.outils import construire_registre
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -58,7 +58,7 @@ TASKS: list[dict[str, Any]] = [
     },
     {
         "id": 5,
-        "excerpt": "Le classeur contient : assurance-habitation.pdf, assurance-auto.eml, controle-technique.txt, garantie-chaudiere.docx, abonnement-salle.csv.",
+        "excerpt": "Le archiviste contient : assurance-habitation.pdf, assurance-auto.eml, controle-technique.txt, garantie-chaudiere.docx, abonnement-salle.csv.",
         "objective": "Produis le rapport des echeances.",
         "expect_tool": "rapport_ecrire",
         "expect_args": {},
@@ -72,7 +72,7 @@ TASKS: list[dict[str, Any]] = [
     },
     {
         "id": 7,
-        "excerpt": "Classeur : 5 documents, aucun releve bancaire.",
+        "excerpt": "Archiviste : 5 documents, aucun releve bancaire.",
         "objective": "Donne-moi le solde de mon compte bancaire.",
         "expect_tool": "__final__",
         "expect_args": {"final": "pas"},
@@ -87,7 +87,7 @@ TASKS: list[dict[str, Any]] = [
     {
         "id": 9,
         "excerpt": "Dossier taxe : un seul fichier, taxe-fonciere.txt.",
-        "objective": "Liste les fichiers du classeur.",
+        "objective": "Liste les fichiers du archiviste.",
         "expect_tool": "classeur_lister",
         "expect_args": {},
     },
@@ -102,7 +102,7 @@ TASKS: list[dict[str, Any]] = [
 
 
 def _tool_table() -> list[dict[str, Any]]:
-    tmp = Path(tempfile.mkdtemp(prefix="classeur-bench-"))
+    tmp = Path(tempfile.mkdtemp(prefix="archiviste-bench-"))
     ctx = Contexte(
         atelier=Atelier(tmp / "atelier"),
         as_of=dt.date(2026, 11, 20),
@@ -173,7 +173,7 @@ def executer_mesure(args: argparse.Namespace) -> int:
     cost_1000 = (tokens_in + tokens_out) * price / 1_000_000 * 1000 if price else 0.0
 
     report = [
-        "# Rapport de mesure — Classeur",
+        "# Rapport de mesure — Archiviste",
         "",
     ]
     if simulated:

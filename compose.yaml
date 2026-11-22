@@ -1,18 +1,18 @@
 services:
-  classeur:
+  archiviste:
     build: .
-    image: ghcr.io/VOTRE-COMPTE/classeur:latest
-    container_name: classeur
+    image: ghcr.io/Sophie-H25/archiviste:latest
+    container_name: archiviste
     ports:
       - "8080:8080"
     user: "568:568"            # même UID que l'utilisateur applicatif TrueNAS
     environment:
-      CLASSEUR_RUNS: /data/runs
-      CLASSEUR_DONNEES: /data
+      ARCHIVISTE_RUNS: /data/runs
+      ARCHIVISTE_DATA: /data
     volumes:
       # Seul répertoire inscriptible : runs, journaux, procédures apprises.
-      - classeur-data:/data
+      - archiviste-data:/data
     restart: unless-stopped
 
 volumes:
-  classeur-data:
+  archiviste-data:

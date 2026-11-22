@@ -30,14 +30,14 @@ jobs:
         run: python -m unittest discover -s essais -v
 
       - name: Validation des cassettes
-        run: python -m classeur valider
+        run: python -m archiviste valider
 
       - name: Tous les scénarios par la ligne de commande
         run: |
           set -e
-          for slug in $(python -m classeur lister | awk '{print $1}'); do
+          for slug in $(python -m archiviste lister | awk '{print $1}'); do
             echo "── $slug"
-            python -m classeur executer "$slug"
+            python -m archiviste executer "$slug"
           done
 
       - name: Mesure contre un serveur simulé (vérifie le harnais, ne mesure rien)
@@ -48,12 +48,12 @@ jobs:
             if curl -fsS http://127.0.0.1:8099/v1/models > /dev/null; then break; fi
             sleep 0.5
           done
-          python -m classeur mesurer --url http://127.0.0.1:8099 --sortie mesure/mesure-simulee.md
+          python -m archiviste mesurer --url http://127.0.0.1:8099 --sortie mesure/mesure-simulee.md
 
       - name: L'interface répond et sert un rapport
         run: |
           set -e
-          python -m classeur servir --port 8090 &
+          python -m archiviste servir --port 8090 &
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:8090/healthz > /dev/null; then break; fi
             sleep 1
@@ -85,7 +85,7 @@ jobs:
       contents: read
       packages: write
     env:
-      IMAGE_NAME: classeur          # minuscules obligatoires pour GHCR
+      IMAGE_NAME: archiviste          # minuscules obligatoires pour GHCR
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
@@ -122,10 +122,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Construire l'image
-        run: docker build -t classeur:fumee .
+        run: docker build -t archiviste:fumee .
 
       - name: Démarrer le conteneur
-        run: docker run -d --name classeur -p 8080:8080 classeur:fumee
+        run: docker run -d --name archiviste -p 8080:8080 archiviste:fumee
 
       - name: Attendre /healthz
         run: |
@@ -133,7 +133,7 @@ jobs:
             if curl -fsS http://127.0.0.1:8080/healthz; then echo; exit 0; fi
             sleep 1
           done
-          docker logs classeur
+          docker logs archiviste
           exit 1
 
       - name: Lancer une pièce par l'API et récupérer le rapport
@@ -158,4 +158,4 @@ jobs:
 
       - name: Journaux si échec
         if: failure()
-        run: docker logs classeur || true
+        run: docker logs archiviste || true

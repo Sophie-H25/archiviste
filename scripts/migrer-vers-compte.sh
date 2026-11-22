@@ -3,14 +3,14 @@
 #
 #   ./scripts/migrer-vers-compte.sh <compte-github> [nom-du-depot]
 #
-# Exemple : ./scripts/migrer-vers-compte.sh marie-huon le-classeur
+# Exemple : ./scripts/migrer-vers-compte.sh marie-huon le-archiviste
 #
 # Le script ne pousse rien et ne crée aucun dépôt : il réécrit les fichiers,
 # vérifie qu'il ne reste aucun marqueur, puis affiche la marche à suivre.
 set -euo pipefail
 
 compte="${1:-}"
-depot="${2:-classeur}"
+depot="${2:-archiviste}"
 
 if [ -z "$compte" ]; then
   echo "usage : $0 <compte-github> [nom-du-depot]" >&2
@@ -19,21 +19,21 @@ fi
 
 cd "$(dirname "$0")/.."
 
-echo "→ remplacement VOTRE-COMPTE/classeur → ${compte}/${depot}"
+echo "→ remplacement Sophie-H25/archiviste → ${compte}/${depot}"
 grep -rl "VOTRE-COMPTE" --exclude-dir=.git . | while IFS= read -r fichier; do
-  sed -i.bak "s#VOTRE-COMPTE/classeur#${compte}/${depot}#g; s#cd classeur\$#cd ${depot}#" "$fichier"
+  sed -i.bak "s#Sophie-H25/archiviste#${compte}/${depot}#g; s#cd archiviste\$#cd ${depot}#" "$fichier"
   rm -f "${fichier}.bak"
   echo "   ${fichier}"
 done
 
 # Le nom du dossier cloné suit le nom du dépôt.
-sed -i.bak "s#^cd classeur\$#cd ${depot}#" README.md README.en.md 2>/dev/null || true
+sed -i.bak "s#^cd archiviste\$#cd ${depot}#" README.md README.en.md 2>/dev/null || true
 rm -f README.md.bak README.en.md.bak
 
 echo
-if grep -rn "VOTRE-COMPTE" --exclude-dir=.git . >/dev/null 2>&1; then
+if grep -rn "VOTRE-COMPTE" --exclude-dir=.git --exclude=migrer-vers-compte.sh --exclude=MIGRATION.md . >/dev/null 2>&1; then
   echo "✗ il reste des marqueurs :" >&2
-  grep -rn "VOTRE-COMPTE" --exclude-dir=.git . >&2
+  grep -rn "VOTRE-COMPTE" --exclude-dir=.git --exclude=migrer-vers-compte.sh --exclude=MIGRATION.md . >&2
   exit 1
 fi
 echo "✓ aucun marqueur restant"

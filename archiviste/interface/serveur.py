@@ -53,7 +53,7 @@ def _guess_type(name: str) -> str:
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "Classeur/1.0"
+    server_version = "Archiviste/1.0"
 
     def log_message(self, fmt: str, *args: Any) -> None:  # silence par défaut
         if self.server.verbose:  # type: ignore[attr-defined]
@@ -201,7 +201,7 @@ def make_server(host: str = "127.0.0.1", port: int = 8080) -> ThreadingHTTPServe
 def serve(host: str = "127.0.0.1", port: int = 8080, open_browser: bool = False) -> int:
     httpd = make_server(host, port)
     url = f"http://{host if host != '0.0.0.0' else '127.0.0.1'}:{port}/"
-    print(f"Classeur — interface sur {url}")
+    print(f"Archiviste — interface sur {url}")
     print("Ctrl+C pour arrêter.")
     if open_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()

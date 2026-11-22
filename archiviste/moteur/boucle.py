@@ -1,4 +1,4 @@
-"""Classeur — noyau d'agent local (bibliothèque standard uniquement).
+"""Archiviste — noyau d'agent local (bibliothèque standard uniquement).
 
 Quatre responsabilités, volontairement séparées du domaine métier :
 
@@ -25,8 +25,8 @@ from typing import Any, Callable
 ROOT = Path(__file__).resolve().parent.parent.parent
 SCENARIO_DIR = ROOT / "dossiers"
 # Les deux seuls répertoires d'écriture : surchargeables pour un conteneur ou des tests.
-RUNS_DIR = Path(os.environ.get("CLASSEUR_RUNS", ROOT / "runs"))
-DATA_DIR = Path(os.environ.get("CLASSEUR_DONNEES", ROOT / "data"))
+RUNS_DIR = Path(os.environ.get("ARCHIVISTE_RUNS", ROOT / "runs"))
+DATA_DIR = Path(os.environ.get("ARCHIVISTE_DATA", ROOT / "data"))
 
 
 class ErreurOutil(Exception):

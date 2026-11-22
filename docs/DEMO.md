@@ -5,13 +5,13 @@ Pour un relecteur pressé. Rien à installer si Docker est présent.
 ## 1. Lancer (20 s)
 
 ```bash
-docker run --rm -p 8080:8080 -v classeur-data:/data ghcr.io/VOTRE-COMPTE/classeur:latest
+docker run --rm -p 8080:8080 -v archiviste-data:/data ghcr.io/Sophie-H25/archiviste:latest
 ```
 
 Sans Docker (Python 3.11 ou plus, aucune dépendance) :
 
 ```bash
-python -m classeur servir --ouvrir
+python -m archiviste servir --ouvrir
 ```
 
 La page s'ouvre sur une chemise cartonnée, quatre pièces à gauche, un relevé vide à droite.
@@ -31,7 +31,7 @@ jours restants calculés par rapport au 20 novembre 2026. Cliquer sur
 Le même résultat en terminal, sans interface :
 
 ```bash
-python -m classeur executer echeances
+python -m archiviste executer echeances
 ```
 
 ## 3. La pièce qui compte (40 s)
@@ -66,7 +66,7 @@ section, pas seulement le chiffre.
 
 ```bash
 python -m unittest discover -s essais -v
-python -m classeur valider
+python -m archiviste valider
 ```
 
 21 tests, environ 0,6 seconde. La CI exécute la même chose sur trois versions de Python,
@@ -86,12 +86,12 @@ petit modèle 3B se trompe parfois d'argument : l'agent reçoit une observation 
 journalise, et peut corriger. C'est le comportement attendu, pas un plantage.
 
 ```bash
-python -m classeur mesurer --url http://127.0.0.1:11434 --nom-modele qwen2.5:3b
+python -m archiviste mesurer --url http://127.0.0.1:11434 --nom-modele qwen2.5-coder-7b-instruct
 ```
 
 ## Ce qui peut coincer
 
-- **Port 8080 déjà pris** : `python -m classeur servir --port 8090`.
+- **Port 8080 déjà pris** : `python -m archiviste servir --port 8090`.
 - **`/v1` oublié dans l'URL** : le code le rajoute, mais une URL en `https://` vers un
   serveur local en `http://` échoue. Utiliser `http://`.
 - **Image Docker absente** : `docker compose up --build` construit l'image localement.

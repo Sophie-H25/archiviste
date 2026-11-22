@@ -1,6 +1,6 @@
 {
   "steps": [
-    { "thought": "Je commence par inventorier le classeur : je ne sais pas encore quels formats sont présents.", "tool": "classeur_lister", "args": { "dir": "." } },
+    { "thought": "Je commence par inventorier le archiviste : je ne sais pas encore quels formats sont présents.", "tool": "classeur_lister", "args": { "dir": "." } },
     { "thought": "Le PDF d'assurance habitation est le document le plus structuré, je l'extrais en premier.", "tool": "document_lire", "args": { "path": "assurance-habitation.pdf" } },
     { "thought": "L'attestation auto est un courriel : je le lis pour trouver la date d'échéance et la cotisation.", "tool": "document_lire", "args": { "path": "assurance-auto.eml" } },
     { "thought": "Le procès-verbal de contrôle technique donne la date limite.", "tool": "document_lire", "args": { "path": "controle-technique.txt" } },

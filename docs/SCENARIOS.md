@@ -1,7 +1,7 @@
 # Écrire une pièce
 
 Une pièce = un objectif + un jeu de documents + une ou plusieurs cassettes. Le format est
-vérifié mécaniquement : `python -m classeur valider`.
+vérifié mécaniquement : `python -m archiviste valider`.
 
 ## Arborescence
 
@@ -25,7 +25,7 @@ nom ; à défaut, le nom de la pièce est utilisé.
   "objective": "Passe en revue tous les documents du classeur...",
   "as_of": "2026-11-20",
   "budget": 14,
-  "fixtures": "classeur",
+  "fixtures": "archiviste",
   "passes": [{ "label": "passe unique", "cassette": "cassette.json" }]
 }
 ```
@@ -62,7 +62,7 @@ sinon `valider` le signale.
 ## Créer une pièce vide
 
 ```bash
-python -m classeur creer ma-piece
+python -m archiviste creer ma-piece
 ```
 
 Le dossier est créé avec un `scenario.json` et une cassette minimale. Il reste à déposer
@@ -70,7 +70,7 @@ les documents dans `documents/` et à écrire les étapes.
 
 ## Ajouter un outil
 
-Un outil est une fonction décorée dans `classeur/outils.py` :
+Un outil est une fonction décorée dans `archiviste/outils.py` :
 
 ```python
 @registre.outil("ma_fonction", "Ce qu'elle fait, en une phrase.", required=("arg",), optional={"opt": 0})

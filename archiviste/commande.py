@@ -1,4 +1,4 @@
-"""Interface en ligne de commande d'Classeur."""
+"""Interface en ligne de commande d'Archiviste."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ TEMPLATE_SCENARIO = {
 }
 TEMPLATE_CASSETTE = {
     "steps": [
-        {"thought": "Commencer par lister le classeur.", "tool": "classeur_lister", "args": {"dir": "."}},
+        {"thought": "Commencer par lister le archiviste.", "tool": "classeur_lister", "args": {"dir": "."}},
         {"thought": "Conclusion.", "final": "À compléter."},
     ]
 }
@@ -35,7 +35,7 @@ def _fmt_size(size: int) -> str:
 
 def _registre_jetable() -> Registre:
     """Registre jetable, utilisé pour valider les cassettes hors exécution."""
-    tmp = Path(tempfile.mkdtemp(prefix="classeur-validate-"))
+    tmp = Path(tempfile.mkdtemp(prefix="archiviste-validate-"))
     ctx = Contexte(atelier=Atelier(tmp / "atelier"), as_of=dt.date.today(), skills=MemoireProcedures(tmp / "skills"), scenario="_validate")
     registre = Registre()
     construire_registre(registre, ctx)
@@ -140,7 +140,7 @@ def cmd_creer(args: argparse.Namespace) -> int:
     print(f"✓ scénario créé : {target}")
     print("  1. déposer les documents de test dans documents/")
     print("  2. décrire l'objectif dans scenario.json")
-    print("  3. écrire la cassette puis vérifier : python -m classeur validate")
+    print("  3. écrire la cassette puis vérifier : python -m archiviste validate")
     return 0
 
 
@@ -226,7 +226,7 @@ def cmd_servir(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="classeur", description="Le classeur : un agent local qui relève vos échéances administratives.")
+    parser = argparse.ArgumentParser(prog="archiviste", description="Le archiviste : un agent local qui relève vos échéances administratives.")
     sub = parser.add_subparsers(dest="commande", required=True)
 
     sub.add_parser("lister", help="lister les scénarios").set_defaults(func=cmd_lister)

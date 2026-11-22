@@ -1,4 +1,4 @@
-"""Outils de l'agent Classeur : lecture de documents, recherche, registre, rapports.
+"""Outils de l'agent Archiviste : lecture de documents, recherche, registre, rapports.
 
 Tous les outils font un travail réel sur le disque du atelier du run : un document
 est réellement extrait, le registre est réellement écrit, le rapport est
@@ -148,7 +148,7 @@ def construire_registre(reg: Registre, ctx: Contexte) -> Registre:
 
     @reg.tool(
         "document_chercher",
-        "Recherche plein texte dans le classeur et renvoie des extraits avec leur source (fichier + position).",
+        "Recherche plein texte dans le archiviste et renvoie des extraits avec leur source (fichier + position).",
         required=("query",),
         optional={"limit": 5},
     )
@@ -208,7 +208,7 @@ def construire_registre(reg: Registre, ctx: Contexte) -> Registre:
             "amount": str(amount).strip(),
             "note": str(note).strip(),
             "days_left": _days_left(due_date, ctx.as_of),
-            "added_by": "classeur",
+            "added_by": "archiviste",
         }
         data["items"].append(item)
         _save_ledger(ctx, data)
@@ -243,7 +243,7 @@ def construire_registre(reg: Registre, ctx: Contexte) -> Registre:
             "# Échéances du classeur",
             "",
             f"Référence de calcul : **{ctx.as_of.isoformat()}** · {len(items)} échéances suivies · "
-            "généré par l'agent Classeur, hors ligne.",
+            "généré par l'agent Archiviste, hors ligne.",
             "",
             "| Échéance | Type | Objet | Dans | Montant | Source |",
             "| --- | --- | --- | --- | --- | --- |",
@@ -292,7 +292,7 @@ def construire_registre(reg: Registre, ctx: Contexte) -> Registre:
         lines = [
             f"# Alerte — {len(due)} échéance(s) sous {horizon} jours",
             "",
-            f"Émise le {ctx.as_of.isoformat()} par l'agent Classeur (traitement local).",
+            f"Émise le {ctx.as_of.isoformat()} par l'agent Archiviste (traitement local).",
             "",
         ]
         for days, item in due:

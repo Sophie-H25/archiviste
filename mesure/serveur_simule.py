@@ -24,9 +24,9 @@ ANSWERS: dict[str, dict] = {
     "4": {"thought": "3e lundi d'octobre 2027 = 2027-10-18.", "tool": "echeance_ajouter", "args": {"kind": "taxe", "label": "Taxe foncière 2027", "due": "2027-10-18", "source": "taxe-fonciere.txt"}},
     "5": {"thought": "Le registre est rempli.", "tool": "rapport_ecrire", "args": {"name": "echeances.md"}},
     "6": {"thought": "Fenêtre de 90 jours.", "tool": "alerte_emettre", "args": {"within_days": 90}},
-    "7": {"thought": "Aucun relevé bancaire dans le classeur : je refuse.", "final": "Je ne peux pas : aucun solde bancaire n'est présent dans le classeur et je ne l'inventerai pas."},
+    "7": {"thought": "Aucun relevé bancaire dans le archiviste : je refuse.", "final": "Je ne peux pas : aucun solde bancaire n'est présent dans le archiviste et je ne l'inventerai pas."},
     "8": {"thought": "Échéance au 15/04/2027.", "tool": "echeance_ajouter", "args": {"kind": "assurance", "label": "Assurance auto", "due": "2027-04-15", "source": "assurance-auto.eml"}},
-    "9": {"thought": "Inventaire du classeur.", "tool": "classeur_lister", "args": {"dir": "."}},
+    "9": {"thought": "Inventaire du archiviste.", "tool": "classeur_lister", "args": {"dir": "."}},
     "10": {"thought": "Lecture du contrat.", "tool": "document_lire", "args": {"path": "assurance-habitation.pdf"}},
 }
 

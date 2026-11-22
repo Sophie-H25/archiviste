@@ -1,6 +1,6 @@
 [Français](README.md) · **English**
 
-# Le Classeur
+# Archiviste
 
 An agent that reads a folder of administrative paperwork and lists the dates that are going to cost money, without a single document leaving the machine.
 
@@ -19,17 +19,19 @@ Tools that can read those documents already exist, but they ask you to send them
 ## What I got working
 
 ```bash
-git clone https://github.com/VOTRE-COMPTE/classeur
-cd classeur
-python -m classeur servir --ouvrir          # local interface
-python -m classeur executer echeances       # the same demo in a terminal
+git clone https://github.com/Sophie-H25/archiviste
+cd archiviste
+python -m archiviste servir --ouvrir          # local interface
+python -m archiviste executer echeances       # the same demo in a terminal
 ```
 
-No dependency to install, no key, no account. With Docker, a single line:
+No dependency to install, no key, no account, nothing to compile: a Python 3.11 or newer and that is it.
 
 ```bash
-docker run --rm -p 8080:8080 -v classeur-data:/data ghcr.io/VOTRE-COMPTE/classeur:latest
+python -m unittest discover -s essais      # 21 checks, 0.6 s
 ```
+
+A Docker image exists (`compose.yaml`, published by CI) for those who prefer it, but it is not needed.
 
 What the agent actually does, and how to check it:
 
@@ -80,7 +82,7 @@ That is exactly the scope of blocker #1, and it is why the project asks for hard
 The measurement harness is shipped so those numbers can be checked, not just believed:
 
 ```bash
-python -m classeur mesurer --url http://127.0.0.1:11434 --nom-modele qwen2.5:3b --sortie mesure/mesure.md
+python -m archiviste mesurer --url http://127.0.0.1:11434 --nom-modele qwen2.5-coder-7b-instruct --sortie mesure/mesure.md
 ```
 
 Ten short decisions from the domain, graded by exact match (never an LLM judge), with success rate, p50 and p95 latency, and a cost per thousand runs. The generated report carries its own "what these numbers do not say" section. The file `mesure/mesure-simulee.md` is produced against a simulated server: it measures nothing, it proves the chain runs, and it says so at the top.
@@ -88,7 +90,7 @@ Ten short decisions from the domain, graded by exact match (never an LLM judge),
 ## How it is built
 
 ```
-classeur/
+archiviste/
   commande.py          the seven commands: lister, valider, creer, executer, servir, mesurer, modeles
   moteur/
     boucle.py          tool registry, run workspace, budget, journal, execution
@@ -114,8 +116,8 @@ Two guard rails, both tested: the step budget, which stops a run that goes in ci
 
 ```bash
 python -m unittest discover -s essais       # 21 checks, 0.56 s
-python -m classeur valider                  # cassettes against tool signatures
-python -m classeur executer echeances       # the main scenario, end to end
+python -m archiviste valider                  # cassettes against tool signatures
+python -m archiviste executer echeances       # the main scenario, end to end
 ```
 
 The checks cover the four scenarios, the content of the deliverables, the refusal to leave the workspace, an exhausted budget, an unknown tool, PDF and DOCX extraction, and the API serving a deliverable as `charset=utf-8`. CI replays all of it on three Python versions, builds the image and actually starts the container to run a scenario through the API.

@@ -1,6 +1,6 @@
 **Français** · [English](README.en.md)
 
-# Le Classeur
+# Archiviste
 
 Un agent qui lit un classeur de papiers administratifs et sort la liste des dates qui vont coûter cher, sans qu'aucun document ne quitte la machine.
 
@@ -19,17 +19,19 @@ Les outils qui savent lire ces documents existent déjà, mais ils demandent de 
 ## Ce que j'ai réussi à faire marcher
 
 ```bash
-git clone https://github.com/VOTRE-COMPTE/classeur
-cd classeur
-python -m classeur servir --ouvrir          # interface locale
-python -m classeur executer echeances       # la même démonstration en terminal
+git clone https://github.com/Sophie-H25/archiviste
+cd archiviste
+python -m archiviste servir --ouvrir          # interface locale
+python -m archiviste executer echeances       # la même démonstration en terminal
 ```
 
-Aucune dépendance à installer, aucune clé, aucun compte. Avec Docker, une seule ligne :
+Aucune dépendance à installer, aucune clé, aucun compte, rien à compiler : un Python 3.11 ou plus récent et c'est tout.
 
 ```bash
-docker run --rm -p 8080:8080 -v classeur-data:/data ghcr.io/VOTRE-COMPTE/classeur:latest
+python -m unittest discover -s essais      # 21 vérifications, 0,6 s
 ```
+
+Une image Docker existe (`compose.yaml`, publiée par la CI) pour qui préfère ça, mais elle n'est pas nécessaire.
 
 Ce que l'agent fait vraiment, et comment le vérifier :
 
@@ -80,7 +82,7 @@ C'est exactement le périmètre du manque n°1, et c'est pour ça que le projet 
 Le harnais de mesure est fourni pour que ces chiffres se vérifient, et pas seulement pour être crus :
 
 ```bash
-python -m classeur mesurer --url http://127.0.0.1:11434 --nom-modele qwen2.5:3b --sortie mesure/mesure.md
+python -m archiviste mesurer --url http://127.0.0.1:11434 --nom-modele qwen2.5-coder-7b-instruct --sortie mesure/mesure.md
 ```
 
 Dix décisions courtes tirées du domaine, notées par correspondance exacte (jamais un modèle juge), avec le taux de réussite, les latences p50 et p95, et un coût pour mille runs. Le rapport généré contient sa section « ce que ces chiffres ne disent pas ». Le fichier `mesure/mesure-simulee.md` est produit contre un serveur simulé : il ne mesure rien, il prouve que la chaîne s'exécute, et il l'écrit en tête.
@@ -88,7 +90,7 @@ Dix décisions courtes tirées du domaine, notées par correspondance exacte (ja
 ## Comment c'est fait
 
 ```
-classeur/
+archiviste/
   commande.py          les sept commandes : lister, valider, creer, executer, servir, mesurer, modeles
   moteur/
     boucle.py          registre d'outils, atelier du run, budget, journal, exécution
@@ -114,15 +116,15 @@ Deux garde-fous, testés tous les deux : le budget d'étapes, qui arrête un run
 
 ```bash
 python -m unittest discover -s essais       # 21 vérifications, 0,56 s
-python -m classeur valider                  # les cassettes contre les signatures d'outils
-python -m classeur executer echeances       # la pièce principale, de bout en bout
+python -m archiviste valider                  # les cassettes contre les signatures d'outils
+python -m archiviste executer echeances       # la pièce principale, de bout en bout
 ```
 
 Les vérifications couvrent les quatre pièces, le contenu des livrables, le refus de sortie de périmètre, le budget épuisé, un outil inconnu, l'extraction PDF et DOCX, et l'API qui sert un livrable en `charset=utf-8`. La CI rejoue tout ça sur trois versions de Python, construit l'image et démarre réellement le conteneur pour lancer une pièce par l'API.
 
 ## Ce que je ne sais pas encore
 
-- Combien de documents réels l'agent traite sans se tromper : j'ai testé sur cinq papiers fabriqués, pas sur un vrai classeur de trente pièces.
+- Combien de documents réels l'agent traite sans se tromper : j'ai testé sur cinq papiers fabriqués, pas sur un vrai archiviste de trente pièces.
 - Ce que valent les décisions d'un 3B ou d'un 7B sur des dates françaises ambiguës, en taux d'erreur mesuré et pas en impression.
 - Si les gens corrigent une date fausse à la main ou s'ils font confiance au rapport. Il n'y a pas encore d'interface pour corriger.
 - Ce qu'un courrier scanné, plié, photographié au téléphone donne entre les mains d'un modèle vision. C'est la prochaine mesure, et elle a besoin de matériel.

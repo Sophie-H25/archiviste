@@ -19,7 +19,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CLASSEUR = ROOT / "documents" / "classeur"
+CLASSEUR = ROOT / "documents" / "archiviste"
 TAXE = ROOT / "documents" / "taxe"
 
 
@@ -153,7 +153,7 @@ Resultat : conforme, aucun defaut a corriger
 Prochain controle technique a effectuer avant le 12/01/2027 :
 presenter le vehicule muni de la carte grise et du present proces-verbal.
 
-Document fictif, genere pour la demonstration Classeur.
+Document fictif, genere pour la demonstration Archiviste.
 """
 
 GARANTIE_CHAUDIERE = [
@@ -176,7 +176,7 @@ Commune de Toulouse
 Montant a payer : 1 342,00 EUR
 Le reglement doit intervenir avant le 3e lundi d'octobre 2027.
 Paiement en ligne ou par prelevement mensuel.
-Document fictif, genere pour la demonstration Classeur.
+Document fictif, genere pour la demonstration Archiviste.
 """
 
 

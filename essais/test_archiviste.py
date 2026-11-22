@@ -21,22 +21,22 @@ BASE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE))
 
 # Isolements : les runs et les procédures apprises vont dans des répertoires jetables.
-_TMP = Path(tempfile.mkdtemp(prefix="classeur-tests-"))
-os.environ.setdefault("CLASSEUR_RUNS", str(_TMP / "runs"))
-os.environ.setdefault("CLASSEUR_DONNEES", str(_TMP / "data"))
+_TMP = Path(tempfile.mkdtemp(prefix="archiviste-tests-"))
+os.environ.setdefault("ARCHIVISTE_RUNS", str(_TMP / "runs"))
+os.environ.setdefault("ARCHIVISTE_DATA", str(_TMP / "data"))
 
-from classeur import commande
-from classeur.interface import serveur
-from classeur.moteur import boucle as noyau  # noqa: E402
-from classeur.moteur.lecture import extraire_texte  # noqa: E402
-from classeur.moteur.boucle import Contexte, Registre, Atelier, MemoireProcedures  # noqa: E402
-from classeur.moteur.outils import construire_registre  # noqa: E402
+from archiviste import commande
+from archiviste.interface import serveur
+from archiviste.moteur import boucle as noyau  # noqa: E402
+from archiviste.moteur.lecture import extraire_texte  # noqa: E402
+from archiviste.moteur.boucle import Contexte, Registre, Atelier, MemoireProcedures  # noqa: E402
+from archiviste.moteur.outils import construire_registre  # noqa: E402
 
-RUNS = Path(os.environ["CLASSEUR_RUNS"])
+RUNS = Path(os.environ["ARCHIVISTE_RUNS"])
 
 
 def make_registry(tmp: Path | None = None) -> tuple[Registre, Contexte]:
-    root = Path(tmp or tempfile.mkdtemp(prefix="classeur-ctx-", dir=_TMP))
+    root = Path(tmp or tempfile.mkdtemp(prefix="archiviste-ctx-", dir=_TMP))
     ctx = Contexte(atelier=Atelier(root / "atelier"), as_of=__import__("datetime").date(2026, 11, 20), skills=MemoireProcedures(root / "skills"), scenario="_test")
     registre = Registre()
     construire_registre(registre, ctx)
@@ -185,7 +185,7 @@ class TestHttpApi(unittest.TestCase):
         status, headers, body = self._get("/")
         self.assertEqual(status, 200)
         self.assertIn("text/html", headers["Content-Type"])
-        self.assertIn("Classeur".encode(), body)
+        self.assertIn("Archiviste".encode(), body)
 
     def test_run_then_artifact_has_charset(self) -> None:
         request = urllib.request.Request(

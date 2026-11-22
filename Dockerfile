@@ -3,8 +3,8 @@ FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    CLASSEUR_RUNS=/data/runs \
-    CLASSEUR_DONNEES=/data
+    ARCHIVISTE_RUNS=/data/runs \
+    ARCHIVISTE_DATA=/data
 
 WORKDIR /app
 
@@ -26,4 +26,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Le conteneur n'a besoin ni de configuration, ni de secret, ni de socket Docker.
 # Un seul volume inscriptible : /data (runs, journal, procédures apprises).
-CMD ["python", "-m", "classeur", "servir", "--hote", "0.0.0.0", "--port", "8080"]
+CMD ["python", "-m", "archiviste", "servir", "--hote", "0.0.0.0", "--port", "8080"]

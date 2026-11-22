@@ -1,4 +1,4 @@
-"""Interface du Classeur : une page, aucun CDN, aucune dépendance.
+"""Interface du Archiviste : une page, aucun CDN, aucune dépendance.
 
 Parti pris visuel : une chemise cartonnée et des feuilles posées dessus. Fond
 papier, titres en serif, dates en monospace, tampons pour les statuts. Rien de
@@ -11,7 +11,7 @@ INDEX_HTML = r'''<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Le Classeur — agent local d'échéances</title>
+<title>Archiviste — vos papiers, vos échéances</title>
 <style>
   :root{
     --papier:#f8f3e7; --carton:#e7dcc6; --bord:#cbbfa6; --encre:#28231d;
@@ -113,7 +113,7 @@ INDEX_HTML = r'''<!doctype html>
 <div class="chemise">
   <div class="onglet">
     <div>
-      <h1 class="titre">Le <em>Classeur</em></h1>
+      <h1 class="titre">Arch<em>iviste</em></h1>
       <div class="sous">agent local · vos papiers ne sortent pas de la machine</div>
     </div>
     <div class="cachet">candidature<br>AI&nbsp;Entry</div>
@@ -152,7 +152,7 @@ INDEX_HTML = r'''<!doctype html>
     </section>
   </div>
 
-  <footer>Classeur · MIT · documents de démonstration synthétiques (identités inventées, domaines .invalid) · aucun appel sortant en mode cassette</footer>
+  <footer>Archiviste · MIT · documents de démonstration synthétiques (identités inventées, domaines .invalid) · aucun appel sortant en mode cassette</footer>
 </div>
 
 <script>
@@ -199,7 +199,7 @@ function rendreProcedures(liste) {
 async function lancer(slug, mode, bouton) {
   const etiquette = bouton ? bouton.textContent : "";
   if (bouton) { bouton.disabled = true; bouton.textContent = "en cours…"; }
-  $("#feuille").innerHTML = '<p class="vide">le classeur est ouvert, l\'agent travaille…</p>';
+  $("#feuille").innerHTML = '<p class="vide">le archiviste est ouvert, l\'agent travaille…</p>';
   const corps = { scenario: slug, mode };
   if (mode === "modele") { corps.base_url = $("#url").value; corps.model = $("#modele").value; }
   const r = await api("/api/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corps) });
