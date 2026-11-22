@@ -1,0 +1,18 @@
+{
+  "steps": [
+    { "thought": "Je commence par inventorier le classeur : je ne sais pas encore quels formats sont présents.", "tool": "classeur_lister", "args": { "dir": "." } },
+    { "thought": "Le PDF d'assurance habitation est le document le plus structuré, je l'extrais en premier.", "tool": "document_lire", "args": { "path": "assurance-habitation.pdf" } },
+    { "thought": "L'attestation auto est un courriel : je le lis pour trouver la date d'échéance et la cotisation.", "tool": "document_lire", "args": { "path": "assurance-auto.eml" } },
+    { "thought": "Le procès-verbal de contrôle technique donne la date limite.", "tool": "document_lire", "args": { "path": "controle-technique.txt" } },
+    { "thought": "La garantie de la chaudière est un .docx daté : j'en ai besoin pour l'échéance de garantie.", "tool": "document_lire", "args": { "path": "garantie-chaudiere.docx" } },
+    { "thought": "Le CSV d'abonnement contient la reconduction tacite, je le lis pour la date.", "tool": "document_lire", "args": { "path": "abonnement-salle.csv" } },
+    { "thought": "Échéance la plus proche : le contrôle technique du 12 janvier 2027.", "tool": "echeance_ajouter", "args": { "kind": "controle_technique", "label": "Contrôle technique du véhicule AB-123-CD", "due": "2027-01-12", "source": "controle-technique.txt" } },
+    { "thought": "La garantie chaudière court jusqu'au 28 février 2027.", "tool": "echeance_ajouter", "args": { "kind": "garantie", "label": "Garantie chaudière Thermorane T-24 (5 ans)", "due": "2027-02-28", "source": "garantie-chaudiere.docx" } },
+    { "thought": "Contrat auto : échéance annuelle au 15 avril 2027, cotisation 612 EUR.", "tool": "echeance_ajouter", "args": { "kind": "assurance", "label": "Assurance auto — échéance annuelle", "due": "2027-04-15", "source": "assurance-auto.eml", "amount": "612,00 EUR / an" } },
+    { "thought": "L'abonnement salle se reconduit tacitement le 1er mai 2027 : c'est une échéance de résiliation.", "tool": "echeance_ajouter", "args": { "kind": "abonnement", "label": "Salle Forme Plus — reconduction tacite", "due": "2027-05-01", "source": "abonnement-salle.csv", "amount": "29,90 EUR / mois" } },
+    { "thought": "Assurance habitation : renouvellement au 30 juin 2027, préavis de deux mois.", "tool": "echeance_ajouter", "args": { "kind": "assurance", "label": "Assurance habitation — renouvellement", "due": "2027-06-30", "source": "assurance-habitation.pdf", "amount": "462,00 EUR / an" } },
+    { "thought": "Le registre contient cinq échéances : je génère le rapport depuis le registre, pas à la main.", "tool": "rapport_ecrire", "args": { "name": "echeances.md" } },
+    { "thought": "Une alerte à 90 jours rend le livrable actionnable tout de suite.", "tool": "alerte_emettre", "args": { "within_days": 90 } },
+    { "thought": "Rapport écrit et alerte émise.", "final": "Cinq échéances relevées dans quatre formats différents (PDF, courriel, DOCX, CSV) et un texte. La plus proche : le contrôle technique du véhicule AB-123-CD le 2027-01-12, dans 53 jours. Puis la fin de garantie de la chaudière (2027-02-28), l'échéance du contrat auto (2027-04-15, 612 EUR), la reconduction tacite de la salle (2027-05-01) et le renouvellement habitation (2027-06-30, préavis de deux mois). Livrables : livrables/echeances.md et alertes/alertes-90j.md." }
+  ]
+}

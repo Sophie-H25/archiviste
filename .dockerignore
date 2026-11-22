@@ -1,0 +1,15 @@
+.git
+.gitignore
+.github
+essais/
+docs/
+runs/
+data/
+__pycache__/
+*.py[cod]
+*.md
+!README.md
+!README.en.md
+mesure/mesure.md
+mesure/mesure-simulee.md
+.DS_Store

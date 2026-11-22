@@ -1,0 +1,9 @@
+{
+  "steps": [
+    { "thought": "Je relis d'abord les procédures apprises : une erreur de date a déjà été rencontrée.", "tool": "procedure_relire", "args": { "topic": "dates langage naturel échéance ISO" } },
+    { "thought": "La procédure dit de calculer la date réelle avant l'appel. Je lis l'avis pour confirmer l'expression et le montant.", "tool": "document_lire", "args": { "path": "taxe-fonciere.txt" } },
+    { "thought": "« 3e lundi d'octobre 2027 » = 18 octobre 2027, calculé et vérifié : j'enregistre la date réelle.", "tool": "echeance_ajouter", "args": { "kind": "taxe", "label": "Taxe foncière 2027", "due": "2027-10-18", "source": "taxe-fonciere.txt", "amount": "1 342,00 EUR", "note": "date calculée depuis « 3e lundi d'octobre 2027 »" } },
+    { "thought": "Le registre contient l'échéance : je produis le rapport.", "tool": "rapport_ecrire", "args": { "name": "echeances.md" } },
+    { "thought": "Fait, avec la procédure relue au lieu de réessayer à l'aveugle.", "final": "Échéance enregistrée : taxe foncière 2027, 1 342,00 EUR, au 2027-10-18 (3e lundi d'octobre 2027, converti en date réelle). Rapport écrit dans livrables/echeances.md. La procédure relue en première étape est celle écrite après l'échec de la passe précédente." }
+  ]
+}

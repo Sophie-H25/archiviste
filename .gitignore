@@ -1,0 +1,14 @@
+# exécution
+runs/
+data/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# rapports de mesure locaux (le rapport simulé de la CI est versionné, lui)
+mesure/mesure.md
+
+# divers
+.DS_Store
+*.log

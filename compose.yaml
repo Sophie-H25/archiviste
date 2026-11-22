@@ -1,0 +1,18 @@
+services:
+  classeur:
+    build: .
+    image: ghcr.io/VOTRE-COMPTE/classeur:latest
+    container_name: classeur
+    ports:
+      - "8080:8080"
+    user: "568:568"            # même UID que l'utilisateur applicatif TrueNAS
+    environment:
+      CLASSEUR_RUNS: /data/runs
+      CLASSEUR_DONNEES: /data
+    volumes:
+      # Seul répertoire inscriptible : runs, journaux, procédures apprises.
+      - classeur-data:/data
+    restart: unless-stopped
+
+volumes:
+  classeur-data:

@@ -1,0 +1,7 @@
+{
+  "steps": [
+    { "thought": "Avant de refuser, je vérifie si le classeur contient un relevé bancaire.", "tool": "document_chercher", "args": { "query": "solde compte bancaire relevé IBAN" } },
+    { "thought": "Aucun relevé. Je vérifie une seconde formulation avant de conclure.", "tool": "document_chercher", "args": { "query": "carte bancaire code confidentiel" } },
+    { "thought": "Rien dans le classeur. Je refuse et je dis ce que je peux faire, sans inventer.", "final": "Je ne peux pas répondre : le classeur ne contient aucun relevé bancaire et aucun code de carte, et je n'ai aucun accès réseau ni à une banque. Je ne vais pas inventer un solde ni un code — un agent qui fabrique un chiffre bancaire est plus dangereux qu'inutile. Ce que je peux faire avec ce classeur : relever les échéances (contrôle technique 2027-01-12, assurance auto 2027-04-15, garantie chaudière 2027-02-28), retrouver une clause dans un contrat, ou préparer une lettre de résiliation à partir des préavis présents dans les documents." }
+  ]
+}

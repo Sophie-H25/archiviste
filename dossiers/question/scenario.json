@@ -1,0 +1,9 @@
+{
+  "slug": "question",
+  "title": "Question sur un document",
+  "objective": "Quelle franchise s'applique en cas de dégât des eaux, et quel est le plafond mobilier ? Réponds avec la source exacte, sans rien inventer.",
+  "as_of": "2026-11-20",
+  "budget": 8,
+  "fixtures": "classeur",
+  "passes": [{ "label": "passe unique", "cassette": "cassette.json" }]
+}

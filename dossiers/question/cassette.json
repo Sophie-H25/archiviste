@@ -1,0 +1,7 @@
+{
+  "steps": [
+    { "thought": "Je cherche d'abord les passages qui parlent de franchise et de dégât des eaux, pour ne pas extraire un document entier au hasard.", "tool": "document_chercher", "args": { "query": "franchise dégât des eaux plafond" } },
+    { "thought": "Le contrat habitation est la source : je le lis en entier pour vérifier le contexte des chiffres.", "tool": "document_lire", "args": { "path": "assurance-habitation.pdf" } },
+    { "thought": "Les deux montants sont dans la section GARANTIES.", "final": "Franchise dégâts des eaux : **250 EUR par sinistre**. Plafond mobilier : **45 000 EUR**. Source : `assurance-habitation.pdf`, section GARANTIES (contrat HAB-2024-88421, cotisation 462,00 EUR/an, renouvellement au 30 juin 2027). À noter : la franchise vol et vandalisme est différente (300 EUR), elle ne s'applique pas ici." }
+  ]
+}

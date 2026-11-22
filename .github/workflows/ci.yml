@@ -1,0 +1,161 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  tests:
+    name: tests (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Tests unitaires
+        run: python -m unittest discover -s essais -v
+
+      - name: Validation des cassettes
+        run: python -m classeur valider
+
+      - name: Tous les scénarios par la ligne de commande
+        run: |
+          set -e
+          for slug in $(python -m classeur lister | awk '{print $1}'); do
+            echo "── $slug"
+            python -m classeur executer "$slug"
+          done
+
+      - name: Mesure contre un serveur simulé (vérifie le harnais, ne mesure rien)
+        run: |
+          set -e
+          python mesure/serveur_simule.py --port 8099 &
+          for i in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8099/v1/models > /dev/null; then break; fi
+            sleep 0.5
+          done
+          python -m classeur mesurer --url http://127.0.0.1:8099 --sortie mesure/mesure-simulee.md
+
+      - name: L'interface répond et sert un rapport
+        run: |
+          set -e
+          python -m classeur servir --port 8090 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8090/healthz > /dev/null; then break; fi
+            sleep 1
+          done
+          python - <<'PY'
+          import json, urllib.request
+          requete = urllib.request.Request(
+              "http://127.0.0.1:8090/api/run",
+              data=json.dumps({"scenario": "echeances", "mode": "cassette"}).encode(),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          run = json.load(urllib.request.urlopen(requete, timeout=120))
+          assert run["status"] == "done", run["status"]
+          nom = "livrables/echeances.md"
+          url = f"http://127.0.0.1:8090/api/artifact?run={run['run_id']}&name={nom}"
+          corps = urllib.request.urlopen(url, timeout=30).read().decode("utf-8")
+          assert "2027-01-12" in corps, corps[:200]
+          assert "Échéances" in corps, "charset cassé"
+          print(f"run {run['run_id']} → {nom} ({len(corps)} octets)")
+          PY
+
+  image:
+    name: image (GHCR)
+    needs: tests
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE_NAME: classeur          # minuscules obligatoires pour GHCR
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Connexion à GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Métadonnées
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha
+
+      - name: Construction et publication
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  fumee:
+    name: fumée (conteneur réel)
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Construire l'image
+        run: docker build -t classeur:fumee .
+
+      - name: Démarrer le conteneur
+        run: docker run -d --name classeur -p 8080:8080 classeur:fumee
+
+      - name: Attendre /healthz
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/healthz; then echo; exit 0; fi
+            sleep 1
+          done
+          docker logs classeur
+          exit 1
+
+      - name: Lancer une pièce par l'API et récupérer le rapport
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          requete = urllib.request.Request(
+              "http://127.0.0.1:8080/api/run",
+              data=json.dumps({"scenario": "echeances", "mode": "cassette"}).encode(),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          resultat = json.load(urllib.request.urlopen(requete, timeout=120))
+          assert resultat["status"] == "done", resultat
+          nom = "livrables/echeances.md"
+          url = f"http://127.0.0.1:8080/api/artifact?run={resultat['run_id']}&name={nom}"
+          corps = urllib.request.urlopen(url, timeout=30).read().decode("utf-8")
+          assert "2027-01-12" in corps, corps[:200]
+          assert "Échéances" in corps, "charset cassé"
+          print(f"pièce {resultat['run_id']} → {nom} OK ({len(corps)} octets)")
+          PY
+
+      - name: Journaux si échec
+        if: failure()
+        run: docker logs classeur || true
