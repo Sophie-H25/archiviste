@@ -1,6 +1,6 @@
 # Archiviste
 
-Un agent qui ouvre un dossier de papiers administratifs, y trouve les dates qui coûtent cher et les range dans un registre, sans qu'aucun document ne quitte la machine.
+Archiviste lit les papiers d'un foyer, un par un, et sort la liste des dates à ne pas rater : la garantie qui expire, l'abonnement qui se reconduit, le contrôle technique qui tombe. Aucun document ne quitte la machine.
 
 Ce dépôt est ma candidature au palier **AI Entry** du [ASUS Agent Computer Challenge](https://fr.asus.click/ACC_CWCT). Ce palier attend un premier concept, pas un logiciel abouti : ici, c'est un POC qui démarre en trois commandes, avec quatre essais rejouables et vingt et une vérifications. Le reste du texte dit ce qui fonctionne, ce qui coince, et ce qu'il faudrait pour aller plus loin.
 
@@ -12,7 +12,7 @@ Ce dépôt est ma candidature au palier **AI Entry** du [ASUS Agent Computer Cha
 
 ## Le point de départ
 
-Un dossier de papiers, c'est cinq à trente documents qui arrivent dans quatre formats : le PDF de l'assurance, le courriel de l'attestation, le `.docx` de la garantie, le CSV de l'abonnement. Les dates qui coûtent de l'argent sont enterrées dedans : la reconduction tacite, la fin de garantie de la chaudière, le préavis de deux mois.
+Un dossier de papiers, c'est cinq à trente documents qui arrivent dans quatre formats : le PDF de l'assurance, le courriel de l'attestation, le `.docx` de la garantie, le CSV de l'abonnement. Ce sont des dates, et elles sont enterrées au milieu du texte : une reconduction tacite, une fin de garantie de chaudière, un préavis de deux mois.
 
 Personne ne relit ce tas de fichiers, et le résultat est connu : un abonnement se reconduit, une garantie expire, un contrôle technique passe en retard.
 
