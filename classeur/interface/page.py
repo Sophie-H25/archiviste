@@ -168,7 +168,7 @@ async function api(chemin, options) {
 
 function rendrePieces(donnees) {
   const boite = $("#pieces");
-  const pieces = donnees.scenarios || [];
+  const pieces = donnees.dossiers || donnees.scenarios || [];
   $("#nb-pieces").textContent = pieces.length ? pieces.length + " pièces" : "";
   if (!pieces.length) { boite.innerHTML = '<p class="vide">aucune pièce</p>'; return; }
   boite.innerHTML = pieces.map((s) => `
