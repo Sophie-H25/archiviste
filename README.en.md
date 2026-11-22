@@ -21,8 +21,9 @@ Tools that can read those documents already exist, but they ask you to send them
 ```bash
 git clone https://github.com/Sophie-H25/archiviste
 cd archiviste
-python -m archiviste servir --ouvrir          # local interface
-python -m unittest discover -s essais      # 21 checks, 0.6 s
+python -m archiviste servir --ouvrir         # the interface
+python -m archiviste executer echeances      # same demo, in a terminal
+python -m unittest discover -s essais        # 21 checks, 0.6 s
 ```
 
 No dependency to install, no key, no account, nothing to compile: a Python 3.11 or newer and that is it. A Docker image exists (`compose.yaml`, published by CI) for those who prefer it, but it is not needed.

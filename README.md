@@ -21,8 +21,9 @@ Les outils qui savent lire ces documents existent déjà, mais ils demandent de 
 ```bash
 git clone https://github.com/Sophie-H25/archiviste
 cd archiviste
-python -m archiviste servir --ouvrir          # interface locale
-python -m unittest discover -s essais      # 21 vérifications, 0,6 s
+python -m archiviste servir --ouvrir         # l'interface
+python -m archiviste executer echeances      # la même démo, en terminal
+python -m unittest discover -s essais        # 21 vérifications, 0,6 s
 ```
 
 Aucune dépendance à installer, aucune clé, aucun compte, rien à compiler : un Python 3.11 ou plus récent et c'est tout. Une image Docker existe (`compose.yaml`, publiée par la CI) pour qui préfère ça, mais elle n'est pas nécessaire.
