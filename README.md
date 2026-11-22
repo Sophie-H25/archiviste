@@ -66,9 +66,9 @@ Ces sept points sont la raison du palier AI Entry.
 
 ## Ce qu'il faudrait comme machine
 
-Tout ce qui touche au texte tient sans carte graphique : la couche agent, l'extraction, le serveur et la page ne demandent aucun calcul lourd. Ce qui manque est ailleurs. La machine de développement ne peut charger qu'un modèle vision de deux milliards de paramètres, et à cette taille il confond une date manuscrite avec un montant : la lecture d'un scan devient une devinette.
+Tout ce qui touche au texte tient sans carte graphique : la couche agent, l'extraction, le serveur et la page ne demandent aucun calcul lourd. Ce qui manque est ailleurs. La carte de la machine de développement offre 6 Go de mémoire vidéo : un modèle vision de trois milliards en Q4 y tient tout juste une fois le contexte compté, et à cette taille il confond encore une date manuscrite avec un montant. La lecture d'un scan reste une devinette, et l'agent refuse plutôt que de deviner.
 
-Un modèle de huit milliards en Q4 pèse environ 5,5 Go de poids et un peu plus d'un gigaoctet de contexte et de cache une fois chargé. En Q8, il faut compter près du double. Aucune de ces deux configurations ne rentre dans la mémoire disponible aujourd'hui, d'où le refus poli plutôt qu'une lecture fausse.
+Un modèle de huit milliards en Q4 pèse environ 5,5 Go de poids et un peu plus d'un gigaoctet de contexte et de cache : près de 7 Go une fois chargé, au delà de ce que la carte peut prendre. En Q8, il faut compter près du double. C'est le palier qu'une carte à 16 Go fait franchir.
 
 Sur une carte à 16 Go, la même quantité de travail change de nature :
 
