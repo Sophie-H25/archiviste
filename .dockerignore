@@ -2,14 +2,14 @@
 .gitignore
 .github
 essais/
-docs/
+documentation/
 runs/
 data/
 __pycache__/
 *.py[cod]
 *.md
 !README.md
-!README.en.md
+!README.md
 mesure/mesure.md
 mesure/mesure-simulee.md
 .DS_Store

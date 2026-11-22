@@ -27,5 +27,5 @@ Deux pistes, dans cet ordre :
    dans le prompt, ce que LM Studio et Ollama exposent tous les deux ;
 2. un modèle plus gros, ce qui ramène la question du matériel.
 
-En attendant, la démonstration reproductible est le mode cassette : les décisions sont
+En attendant, la démonstration reproductible est le mode conducteur : les décisions sont
 enregistrées, les effets sont réels, et le résultat est vérifiable à chaque run.

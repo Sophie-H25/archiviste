@@ -2,7 +2,7 @@
 
 Tous les outils font un travail réel sur le disque du atelier du run : un document
 est réellement extrait, le registre est réellement écrit, le rapport est
-réellement généré depuis le registre. Le mode « cassette » ne remplace que le
+réellement généré depuis le registre. Le mode « conducteur » ne remplace que le
 choix des étapes, pas leur exécution.
 """
 

@@ -1,6 +1,6 @@
 """Suite de tests — unittest seul, aucun service externe requis.
 
-Couvre : validation des cassettes, exécution de tous les scénarios, existence et
+Couvre : validation des conducteurs, exécution de tous les essais, existence et
 contenu des artefacts, refus de sortie du atelier du run, budget d'étapes, outil
 inconnu, arguments invalides, extraction PDF/DOCX, API HTTP et charset.
 """
@@ -44,20 +44,20 @@ def make_registry(tmp: Path | None = None) -> tuple[Registre, Contexte]:
     return registre, ctx
 
 
-class TestCassettes(unittest.TestCase):
+class TestConducteurs(unittest.TestCase):
     def test_validate_is_green(self) -> None:
         problems = commande.valider_scenarios()
-        self.assertEqual(problems, [], f"cassettes invalides : {problems}")
+        self.assertEqual(problems, [], f"conducteurs invalides : {problems}")
 
     def test_scenario_creation_scaffold(self) -> None:
-        existing = {s["slug"] for s in noyau.lister_scenarios()}
+        existing = {s["slug"] for s in noyau.lister_essais()}
         self.assertIn("echeances", existing)
         self.assertGreaterEqual(len(existing), 4)
 
 
 class TestScenarios(unittest.TestCase):
     def test_every_scenario_completes_without_error(self) -> None:
-        for scen in noyau.lister_scenarios():
+        for scen in noyau.lister_essais():
             with self.subTest(scenario=scen["slug"]):
                 result = noyau.executer_scenario(scen["slug"], runs_dir=RUNS)
                 self.assertEqual(result["status"], "done", f"{scen['slug']} n'a pas conclu")
@@ -190,7 +190,7 @@ class TestHttpApi(unittest.TestCase):
     def test_run_then_artifact_has_charset(self) -> None:
         request = urllib.request.Request(
             f"http://127.0.0.1:{self.port}/api/run",
-            data=json.dumps({"scenario": "echeances", "mode": "cassette"}).encode(),
+            data=json.dumps({"scenario": "echeances", "mode": "conducteur"}).encode(),
             headers={"Content-Type": "application/json"},
             method="POST",
         )

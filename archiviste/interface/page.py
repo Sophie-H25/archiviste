@@ -126,7 +126,7 @@ INDEX_HTML = r'''<!doctype html>
 
       <details class="reglage">
         <summary>Régler un serveur de modèle local</summary>
-        <p>Sans réglage, l'agent suit une cassette enregistrée : les décisions sont rejouées, les outils s'exécutent pour de vrai. Avec un serveur compatible OpenAI (Ollama, LM Studio, vLLM), c'est le modèle qui choisit chaque étape.</p>
+        <p>Sans réglage, l'agent suit une conducteur enregistrée : les décisions sont rejouées, les outils s'exécutent pour de vrai. Avec un serveur compatible OpenAI (Ollama, LM Studio, vLLM), c'est le modèle qui choisit chaque étape.</p>
         <div class="champ"><label for="url">URL</label><input id="url" value="http://127.0.0.1:11434" spellcheck="false"></div>
         <div class="champ"><label for="modele">modèle</label><input id="modele" value="qwen2.5-coder:7b" spellcheck="false"></div>
         <div class="boutons" style="margin-top:10px">
@@ -152,7 +152,7 @@ INDEX_HTML = r'''<!doctype html>
     </section>
   </div>
 
-  <footer>Archiviste · MIT · documents de démonstration synthétiques (identités inventées, domaines .invalid) · aucun appel sortant en mode cassette</footer>
+  <footer>Archiviste · MIT · documents de démonstration synthétiques (identités inventées, domaines .invalid) · aucun appel sortant en mode conducteur</footer>
 </div>
 
 <script>
@@ -186,7 +186,7 @@ function rendrePieces(donnees) {
         <button class="discret" data-modele="${esc(s.slug)}">Confier au modèle local</button>
       </div>
     </article>`).join("");
-  boite.querySelectorAll("[data-ouvrir]").forEach((b) => b.addEventListener("click", () => lancer(b.dataset.ouvrir, "cassette", b)));
+  boite.querySelectorAll("[data-ouvrir]").forEach((b) => b.addEventListener("click", () => lancer(b.dataset.ouvrir, "conducteur", b)));
   boite.querySelectorAll("[data-modele]").forEach((b) => b.addEventListener("click", () => lancer(b.dataset.modele, "modele", b)));
 }
 
@@ -231,7 +231,7 @@ function rendreReleve(r) {
     <h2>${esc(r.title)} <span class="tampon ${r.status === "done" ? "" : "ko"}">${esc(STATUT[r.status] || r.status)}</span></h2>
     <p class="objectif">${esc(r.objective)}</p>
     <div class="tableau">
-      ${ligne("mode", r.mode === "modele" ? "modèle local" : "cassette")}
+      ${ligne("mode", r.mode === "modele" ? "modèle local" : "conducteur")}
       ${ligne("étapes", r.steps.length)}
       ${ligne("erreurs", r.errors)}
       ${ligne("date de référence", r.as_of)}

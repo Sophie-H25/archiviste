@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-SCENARIO_DIR = ROOT / "dossiers"
+ESSAIS_DIR = ROOT / "dossiers"
 # Les deux seuls répertoires d'écriture : surchargeables pour un conteneur ou des tests.
 RUNS_DIR = Path(os.environ.get("ARCHIVISTE_RUNS", ROOT / "runs"))
 DATA_DIR = Path(os.environ.get("ARCHIVISTE_DATA", ROOT / "data"))
@@ -247,32 +247,32 @@ class Contexte:
 
 
 # --------------------------------------------------------------------------- #
-# Chargement des scénarios
+# Chargement des essais
 # --------------------------------------------------------------------------- #
-def chemins_scenario(slug: str) -> Path:
-    path = SCENARIO_DIR / slug
-    if not (path / "scenario.json").is_file():
-        raise FileNotFoundError(f"scénario inconnu : {slug}")
+def chemins_essai(slug: str) -> Path:
+    path = ESSAIS_DIR / slug
+    if not (path / "fiche.json").is_file():
+        raise FileNotFoundError(f"essai inconnu : {slug}")
     return path
 
 
-def charger_scenario(slug: str) -> dict[str, Any]:
-    data = json.loads((chemins_scenario(slug) / "scenario.json").read_text(encoding="utf-8"))
+def charger_essai(slug: str) -> dict[str, Any]:
+    data = json.loads((chemins_essai(slug) / "fiche.json").read_text(encoding="utf-8"))
     data.setdefault("slug", slug)
     data.setdefault("budget", 14)
-    data.setdefault("passes", [{"label": "passe unique", "cassette": "cassette.json"}])
-    data["_dir"] = chemins_scenario(slug)
+    data.setdefault("passes", [{"label": "passe unique", "conducteur": "conducteur.json"}])
+    data["_dir"] = chemins_essai(slug)
     return data
 
 
-def lister_scenarios() -> list[dict[str, Any]]:
+def lister_essais() -> list[dict[str, Any]]:
     out = []
-    if not SCENARIO_DIR.is_dir():
+    if not ESSAIS_DIR.is_dir():
         return out
-    for path in sorted(SCENARIO_DIR.iterdir()):
-        if (path / "scenario.json").is_file():
+    for path in sorted(ESSAIS_DIR.iterdir()):
+        if (path / "fiche.json").is_file():
             try:
-                scen = charger_scenario(path.name)
+                scen = charger_essai(path.name)
             except (json.JSONDecodeError, OSError):
                 continue
             fixtures = []
@@ -366,7 +366,7 @@ def _collecter_livrables(atelier: Atelier) -> list[dict[str, Any]]:
 
 def executer_scenario(
     slug: str,
-    mode: str = "cassette",
+    mode: str = "conducteur",
     modele: dict[str, Any] | None = None,
     as_of: str | None = None,
     max_steps: int | None = None,
@@ -375,7 +375,7 @@ def executer_scenario(
     from .decisions import PlanificateurModele, PlanificateurEnregistre
     from .outils import construire_registre
 
-    scen = charger_scenario(slug)
+    scen = charger_essai(slug)
     run_id = f"{slug}-{dt.datetime.now().strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:4]}"
     run_dir = Path(runs_dir) / run_id
     atelier = Atelier(run_dir / "atelier")
@@ -410,8 +410,8 @@ def executer_scenario(
                 timeout=int(config.get("timeout", 180)),
             )
         else:
-            cassette = json.loads((Path(scen["_dir"]) / entry["cassette"]).read_text(encoding="utf-8"))
-            planificateur = PlanificateurEnregistre(cassette.get("steps", cassette))
+            conducteur = json.loads((Path(scen["_dir"]) / entry["conducteur"]).read_text(encoding="utf-8"))
+            planificateur = PlanificateurEnregistre(conducteur.get("steps", conducteur))
         passes.append(_executer_passe(ctx, registre, planificateur, journal, scen.get("objective", ""), budget, label))
 
     status = "done" if all(p["status"] == "done" for p in passes) else "budget"

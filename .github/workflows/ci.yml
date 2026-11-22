@@ -29,10 +29,10 @@ jobs:
       - name: Tests unitaires
         run: python -m unittest discover -s essais -v
 
-      - name: Validation des cassettes
+      - name: Validation des conducteurs
         run: python -m archiviste valider
 
-      - name: Tous les scénarios par la ligne de commande
+      - name: Tous les essais par la ligne de commande
         run: |
           set -e
           for slug in $(python -m archiviste lister | awk '{print $1}'); do
@@ -62,7 +62,7 @@ jobs:
           import json, urllib.request
           requete = urllib.request.Request(
               "http://127.0.0.1:8090/api/run",
-              data=json.dumps({"scenario": "echeances", "mode": "cassette"}).encode(),
+              data=json.dumps({"scenario": "echeances", "mode": "conducteur"}).encode(),
               headers={"Content-Type": "application/json"},
               method="POST",
           )
@@ -142,7 +142,7 @@ jobs:
           import json, urllib.request
           requete = urllib.request.Request(
               "http://127.0.0.1:8080/api/run",
-              data=json.dumps({"scenario": "echeances", "mode": "cassette"}).encode(),
+              data=json.dumps({"scenario": "echeances", "mode": "conducteur"}).encode(),
               headers={"Content-Type": "application/json"},
               method="POST",
           )

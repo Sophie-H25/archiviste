@@ -1,22 +1,22 @@
 # Écrire une pièce
 
-Une pièce = un objectif + un jeu de documents + une ou plusieurs cassettes. Le format est
+Une pièce = un objectif + un jeu de documents + une ou plusieurs conducteurs. Le format est
 vérifié mécaniquement : `python -m archiviste valider`.
 
 ## Arborescence
 
 ```
 dossiers/<slug>/
-  scenario.json     objectif, budget, date de référence, passes
-  cassette.json     étapes enregistrées (une passe)
-  cassette-1.json   passe 1 (pièce à deux passes)
-  cassette-2.json   passe 2
+  fiche.json     objectif, budget, date de référence, passes
+  conducteur.json     étapes enregistrées (une passe)
+  conducteur-1.json   passe 1 (pièce à deux passes)
+  conducteur-2.json   passe 2
 ```
 
 Les documents viennent de `documents/<nom>/`. Le champ `fixtures` de la pièce pointe vers ce
 nom ; à défaut, le nom de la pièce est utilisé.
 
-## scenario.json
+## fiche.json
 
 ```json
 {
@@ -26,7 +26,7 @@ nom ; à défaut, le nom de la pièce est utilisé.
   "as_of": "2026-11-20",
   "budget": 14,
   "fixtures": "archiviste",
-  "passes": [{ "label": "passe unique", "cassette": "cassette.json" }]
+  "passes": [{ "label": "passe unique", "conducteur": "conducteur.json" }]
 }
 ```
 
@@ -37,7 +37,7 @@ nom ; à défaut, le nom de la pièce est utilisé.
 - `passes` : une entrée = une passe. Deux entrées = pièce à deux passes, exécutées
   séquentiellement, avec comparaison des étapes et des erreurs.
 
-## Cassette
+## Conducteur
 
 ```json
 {
@@ -54,7 +54,7 @@ sinon `valider` le signale.
 
 `valider` vérifie trois choses, sans exécuter la pièce :
 
-1. la cassette est un JSON valide, non vide ;
+1. la conducteur est un JSON valide, non vide ;
 2. chaque outil cité existe dans le registre ;
 3. les arguments correspondent exactement à la signature de l'outil (ni manquant, ni en
    trop), ce qui évite les fautes de frappe silencieuses.
@@ -65,7 +65,7 @@ sinon `valider` le signale.
 python -m archiviste creer ma-piece
 ```
 
-Le dossier est créé avec un `scenario.json` et une cassette minimale. Il reste à déposer
+Le dossier est créé avec un `fiche.json` et une conducteur minimale. Il reste à déposer
 les documents dans `documents/` et à écrire les étapes.
 
 ## Ajouter un outil
@@ -79,7 +79,7 @@ def ma_fonction(arg: str, opt: int = 0) -> dict:
 ```
 
 La signature affichée à l'agent (`specs()`) est dérivée des paramètres : c'est elle que le
-modèle reçoit en mode `--modele`, et c'est elle que `valider` compare aux cassettes. Une
+modèle reçoit en mode `--modele`, et c'est elle que `valider` compare aux conducteurs. Une
 exception levée dans l'outil devient une observation d'erreur, jamais un arrêt du run.
 
 Deux règles pour un nouvel outil :

@@ -1,10 +1,10 @@
 """Deux planificateurs derrière une seule interface.
 
-* ``PlanificateurEnregistre`` : cassette enregistrée, déterministe, aucun réseau, aucune clé.
+* ``PlanificateurEnregistre`` : conducteur enregistrée, déterministe, aucun réseau, aucune clé.
 * ``PlanificateurModele``   : backend OpenAI-compatible (Ollama, LM Studio, llama.cpp, vLLM).
 
 Les outils s'exécutent pour de vrai dans les deux modes ; seul le choix de
-l'étape suivante change. C'est ce qui rend la démo vérifiable : un run cassette
+l'étape suivante change. C'est ce qui rend la démo vérifiable : un run conducteur
 produit de vrais fichiers, avec des timings honnêtement nuls.
 """
 
@@ -73,7 +73,7 @@ class PlanificateurEnregistre:
 
     def next_step(self, objective: str, history: list[dict[str, Any]]) -> dict[str, Any]:
         if self.index >= len(self.steps):
-            return {"thought": "cassette épuisée", "final": "(cassette épuisée avant conclusion)"}
+            return {"thought": "conducteur épuisée", "final": "(conducteur épuisée avant conclusion)"}
         step = self.steps[self.index]
         self.index += 1
         return step

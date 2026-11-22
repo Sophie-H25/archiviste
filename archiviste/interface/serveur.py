@@ -91,7 +91,7 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/healthz":
             self._send_json({"ok": True, "version": noyau.__dict__.get("__version__", "1.0.0")})
         elif path == "/api/scenarios":
-            self._send_json({"dossiers": noyau.lister_scenarios(), "skills": _all_skills()})
+            self._send_json({"dossiers": noyau.lister_essais(), "skills": _all_skills()})
         elif path == "/api/skills":
             self._send_json({"skills": _all_skills()})
         elif path == "/api/runs":
@@ -123,7 +123,7 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/api/run":
             slug = str(payload.get("scenario") or "")
-            mode = "modele" if payload.get("mode") == "modele" else "cassette"
+            mode = "modele" if payload.get("mode") == "modele" else "conducteur"
             modele = {
                 "base_url": payload.get("base_url") or "http://127.0.0.1:11434",
                 "model": payload.get("model") or "qwen2.5-coder:7b",

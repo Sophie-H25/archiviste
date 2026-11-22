@@ -1,9 +1,13 @@
 {
-  "slug": "echeances",
   "title": "Échéances du classeur",
   "objective": "Passe en revue tous les documents du classeur, relève chaque échéance datée (contrôle technique, garanties, assurances, abonnements) et produis le rapport ainsi qu'une alerte à 90 jours.",
   "as_of": "2026-11-20",
   "budget": 14,
   "fixtures": "classeur",
-  "passes": [{ "label": "passe unique", "cassette": "cassette.json" }]
+  "passes": [
+    {
+      "label": "passe unique",
+      "conducteur": "conducteur.json"
+    }
+  ]
 }

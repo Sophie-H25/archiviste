@@ -10,16 +10,16 @@ import tempfile
 from pathlib import Path
 
 from .moteur import boucle as noyau
-from .moteur.boucle import SCENARIO_DIR, Contexte, Registre, Atelier, MemoireProcedures
+from .moteur.boucle import ESSAIS_DIR, Contexte, Registre, Atelier, MemoireProcedures
 from .moteur.decisions import list_models
 from .moteur.outils import construire_registre
 
 TEMPLATE_SCENARIO = {
-    "title": "Nouveau scénario",
+    "title": "Nouveau essai",
     "objective": "Décrire l'objectif confié à l'agent en une phrase.",
     "as_of": "2026-12-01",
     "budget": 14,
-    "passes": [{"label": "passe unique", "cassette": "cassette.json"}],
+    "passes": [{"label": "passe unique", "conducteur": "conducteur.json"}],
 }
 TEMPLATE_CASSETTE = {
     "steps": [
@@ -34,7 +34,7 @@ def _fmt_size(size: int) -> str:
 
 
 def _registre_jetable() -> Registre:
-    """Registre jetable, utilisé pour valider les cassettes hors exécution."""
+    """Registre jetable, utilisé pour valider les conducteurs hors exécution."""
     tmp = Path(tempfile.mkdtemp(prefix="archiviste-validate-"))
     ctx = Contexte(atelier=Atelier(tmp / "atelier"), as_of=dt.date.today(), skills=MemoireProcedures(tmp / "skills"), scenario="_validate")
     registre = Registre()
@@ -62,24 +62,24 @@ def valider_scenarios() -> list[str]:
     registre = _registre_jetable()
     problems: list[str] = []
 
-    for scen in noyau.lister_scenarios():
+    for scen in noyau.lister_essais():
         slug = scen["slug"]
-        base = SCENARIO_DIR / slug
-        for entry in noyau.charger_scenario(slug)["passes"]:
-            cassette_rel = entry.get("cassette", "cassette.json")
-            cassette_path = base / cassette_rel
-            label = f"{slug}/{cassette_rel}"
-            if not cassette_path.is_file():
-                problems.append(f"{label} : cassette absente")
+        base = ESSAIS_DIR / slug
+        for entry in noyau.charger_essai(slug)["passes"]:
+            conducteur_rel = entry.get("conducteur", "conducteur.json")
+            conducteur_path = base / conducteur_rel
+            label = f"{slug}/{conducteur_rel}"
+            if not conducteur_path.is_file():
+                problems.append(f"{label} : conducteur absente")
                 continue
             try:
-                payload = json.loads(cassette_path.read_text(encoding="utf-8"))
+                payload = json.loads(conducteur_path.read_text(encoding="utf-8"))
             except json.JSONDecodeError as exc:
                 problems.append(f"{label} : JSON invalide ({exc})")
                 continue
             steps = payload.get("steps", payload) if isinstance(payload, dict) else payload
             if not isinstance(steps, list) or not steps:
-                problems.append(f"{label} : cassette vide")
+                problems.append(f"{label} : conducteur vide")
                 continue
             if "final" not in (steps[-1] or {}):
                 problems.append(f"{label} : la dernière étape doit être un 'final'")
@@ -109,7 +109,7 @@ def valider_scenarios() -> list[str]:
 
 
 def cmd_lister(_: argparse.Namespace) -> int:
-    for scen in noyau.lister_scenarios():
+    for scen in noyau.lister_essais():
         flag = "apprentissage" if scen["learning"] else "simple"
         print(f"{scen['slug']:<14} {flag:<14} budget {scen['budget']:>2} · {len(scen['fixtures'])} doc(s) · {scen['title']}")
     return 0
@@ -118,29 +118,29 @@ def cmd_lister(_: argparse.Namespace) -> int:
 def cmd_valider(_: argparse.Namespace) -> int:
     problems = valider_scenarios()
     if problems:
-        print(f"{len(problems)} problème(s) de cassette :")
+        print(f"{len(problems)} problème(s) de conducteur :")
         for problem in problems:
             print(f"  ✗ {problem}")
         return 1
-    count = sum(len(noyau.charger_scenario(s["slug"])["passes"]) for s in noyau.lister_scenarios())
-    print(f"✓ {count} cassette(s) valides : outils connus, arguments conformes, conclusion présente.")
+    count = sum(len(noyau.charger_essai(s["slug"])["passes"]) for s in noyau.lister_essais())
+    print(f"✓ {count} conducteur(s) valides : outils connus, arguments conformes, conclusion présente.")
     return 0
 
 
 def cmd_creer(args: argparse.Namespace) -> int:
     slug = args.slug.strip().lower()
-    target = SCENARIO_DIR / slug
+    target = ESSAIS_DIR / slug
     if target.exists():
         print(f"✗ {target} existe déjà", file=sys.stderr)
         return 1
     (target / "fixtures").mkdir(parents=True)
     (target / "fixtures" / ".gitkeep").write_text("", encoding="utf-8")
-    (target / "scenario.json").write_text(json.dumps({**TEMPLATE_SCENARIO, "slug": slug}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    (target / "cassette.json").write_text(json.dumps(TEMPLATE_CASSETTE, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"✓ scénario créé : {target}")
+    (target / "fiche.json").write_text(json.dumps({**TEMPLATE_SCENARIO, "slug": slug}, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (target / "conducteur.json").write_text(json.dumps(TEMPLATE_CASSETTE, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"✓ essai créé : {target}")
     print("  1. déposer les documents de test dans documents/")
-    print("  2. décrire l'objectif dans scenario.json")
-    print("  3. écrire la cassette puis vérifier : python -m archiviste validate")
+    print("  2. décrire l'objectif dans fiche.json")
+    print("  3. écrire la conducteur puis vérifier : python -m archiviste validate")
     return 0
 
 
@@ -151,7 +151,7 @@ def cmd_executer(args: argparse.Namespace) -> int:
     try:
         result = noyau.executer_scenario(
             args.scenario,
-            mode="modele" if args.modele else "cassette",
+            mode="modele" if args.modele else "conducteur",
             modele=modele,
             as_of=args.as_of,
             max_steps=args.steps,
@@ -164,9 +164,9 @@ def cmd_executer(args: argparse.Namespace) -> int:
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["status"] == "done" else 1
 
-    print(f"Scénario   : {result['title']} ({result['scenario']})")
+    print(f"Essai   : {result['title']} ({result['scenario']})")
     print(f"Objectif   : {result['objective']}")
-    print(f"Mode       : {'modele · ' + args.model if args.modele else 'cassette (déterministe, aucun réseau)'}")
+    print(f"Mode       : {'modele · ' + args.model if args.modele else 'conducteur (déterministe, aucun réseau)'}")
     print(f"Référence  : {result['as_of']} · budget {result['budget']} étapes")
     print()
     for entry in result["passes"]:
@@ -229,16 +229,16 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="archiviste", description="Le archiviste : un agent local qui relève vos échéances administratives.")
     sub = parser.add_subparsers(dest="commande", required=True)
 
-    sub.add_parser("lister", help="lister les scénarios").set_defaults(func=cmd_lister)
-    sub.add_parser("valider", help="valider les cassettes contre les signatures d'outils").set_defaults(func=cmd_valider)
+    sub.add_parser("lister", help="lister les essais").set_defaults(func=cmd_lister)
+    sub.add_parser("valider", help="valider les conducteurs contre les signatures d'outils").set_defaults(func=cmd_valider)
 
-    nouveau = sub.add_parser("creer", help="créer un scénario vide")
+    nouveau = sub.add_parser("creer", help="créer un essai vide")
     nouveau.add_argument("slug")
     nouveau.set_defaults(func=cmd_creer)
 
-    lancer = sub.add_parser("executer", help="exécuter un scénario")
+    lancer = sub.add_parser("executer", help="exécuter un essai")
     lancer.add_argument("scenario")
-    lancer.add_argument("--modele", action="store_true", help="laisser un modèle local choisir les étapes au lieu de la cassette")
+    lancer.add_argument("--modele", action="store_true", help="laisser un modèle local choisir les étapes au lieu de la conducteur")
     lancer.add_argument("--url", default="http://127.0.0.1:11434", help="URL du serveur de modèle (Ollama par défaut)")
     lancer.add_argument("--nom-modele", dest="model", default="qwen2.5-coder:7b")
     lancer.add_argument("--cle", dest="api_key", default=None)
