@@ -112,16 +112,6 @@ Deux garde-fous, tous les deux testés : le budget d'étapes, qui arrête une pa
 
 2 350 lignes de Python, aucune bibliothèque tierce : l'extraction PDF, le serveur et la page tiennent dans la bibliothèque standard. Pas de `pip install`, pas de `requirements.txt`, pas de CDN.
 
-## Vérification
-
-```bash
-python -m unittest discover -s essais       # les quatre essais, 22 vérifications
-python -m archiviste valider                # les conducteurs contre les signatures d'outils
-python -m archiviste executer echeances     # l'essai principal, de bout en bout
-```
-
-Les vérifications couvrent les quatre essais, le contenu des livrables, le refus de sortie de périmètre, le budget épuisé, un outil inconnu, l'extraction PDF et DOCX, et l'API qui sert un livrable en `charset=utf-8`. La CI rejoue le tout sur trois versions de Python, construit l'image et démarre le conteneur pour lancer un essai par l'API.
-
 ## Inconnues
 
 Quatre questions sans réponse chiffrée, et c'est la suite logique du travail.
