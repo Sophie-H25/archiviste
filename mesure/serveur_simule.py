@@ -81,7 +81,7 @@ class Handler(BaseHTTPRequestHandler):
                 break
         if self.delay:
             time.sleep(self.delay)
-        if payload.get("tools"):
+        if payload.get("tools") and "[tache:" not in joined:  # boucle complète, pas le harnais de mesure
             index = getattr(self.server, "boucle_index", 0)
             etape = SEQUENCE[min(index, len(SEQUENCE) - 1)]
             self.server.boucle_index = index + 1  # type: ignore[attr-defined]
