@@ -29,3 +29,16 @@ Deux pistes, dans cet ordre :
 
 En attendant, la démonstration reproductible est le mode conducteur : les décisions sont
 enregistrées, les effets sont réels, et le résultat est vérifiable à chaque run.
+
+## Le format `tools` de l'API
+
+Les signatures partent désormais dans le champ `tools` de `chat/completions`, et la boucle lit les
+`tool_calls` de la réponse. Vérifié par une vérification automatique qui fait tourner l'essai
+`echeances` complet contre `mesure/serveur_simule.py`, lequel répond en `tool_calls` : quatorze
+étapes, registre rempli, rapport écrit, zéro erreur, sans modèle.
+
+Avec LM Studio, `qwen2.5-coder-7b-instruct` accepte le champ `tools` mais répond le JSON dans le
+texte au lieu d'émettre des `tool_calls` : la boucle retombe alors sur son analyse de texte, ce qui
+fonctionne mais ne prouve rien de plus. Et `qwen/qwen3-vl-8b` ne se charge pas du tout sur cette
+machine : `Engine protocol startup was aborted`, faute de mémoire vidéo. Les deux constats datent du
+26 novembre 2026.

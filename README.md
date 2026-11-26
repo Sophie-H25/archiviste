@@ -2,7 +2,7 @@
 
 Archiviste lit les papiers d'un foyer, un par un, et sort la liste des dates à ne pas rater : la garantie qui expire, l'abonnement qui se reconduit, le contrôle technique qui tombe. Aucun document ne quitte la machine.
 
-Ce dépôt est ma candidature au palier **AI Entry** du [ASUS Agent Computer Challenge](https://fr.asus.click/ACC_CWCT). Ce palier attend un premier concept, pas un logiciel abouti : ici, c'est un POC qui démarre en trois commandes, avec quatre essais rejouables et vingt et une vérifications. Le reste du texte dit ce qui fonctionne, ce qui coince, et ce qu'il faudrait pour aller plus loin.
+Ce dépôt est ma candidature au palier **AI Entry** du [ASUS Agent Computer Challenge](https://fr.asus.click/ACC_CWCT). Ce palier attend un premier concept, pas un logiciel abouti : ici, c'est un POC qui démarre en trois commandes, avec quatre essais rejouables et vingt-deux vérifications. Le reste du texte dit ce qui fonctionne, ce qui coince, et ce qu'il faudrait pour aller plus loin.
 
 ![L'interface d'Archiviste : quatre essais à gauche, le relevé d'échéances à droite avec son rapport et ses pièces écrites](documentation/interface.png)
 
@@ -25,7 +25,7 @@ git clone https://github.com/Sophie-H25/archiviste
 cd archiviste
 python -m archiviste servir --ouvrir         # l'interface
 python -m archiviste executer echeances      # la même démo, en terminal
-python -m unittest discover -s essais        # 21 vérifications, 0,6 s
+python -m unittest discover -s essais        # 22 vérifications, 0,6 s
 ```
 
 Un Python 3.11 ou plus récent, et rien d'autre : pas de dépendance, pas de clé, pas de compte, rien à compiler. Le `Dockerfile` et le `compose.yaml` existent, mais l'image est encore en cours de test de mon côté, je ne la compte pas comme chemin d'installation.
@@ -115,7 +115,7 @@ Deux garde-fous, tous les deux testés : le budget d'étapes, qui arrête une pa
 ## Vérification
 
 ```bash
-python -m unittest discover -s essais       # les quatre essais, 21 vérifications
+python -m unittest discover -s essais       # les quatre essais, 22 vérifications
 python -m archiviste valider                # les conducteurs contre les signatures d'outils
 python -m archiviste executer echeances     # l'essai principal, de bout en bout
 ```

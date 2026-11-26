@@ -69,7 +69,7 @@ python -m unittest discover -s essais -v
 python -m archiviste valider
 ```
 
-21 tests, environ 0,6 seconde. La CI exécute la même chose sur trois versions de Python,
+22 tests, environ 0,6 seconde. La CI exécute la même chose sur trois versions de Python,
 puis démarre réellement le conteneur et lance une pièce par l'API.
 
 ## 6. Facultatif : brancher un vrai modèle (5 min)
