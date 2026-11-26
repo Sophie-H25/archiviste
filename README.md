@@ -79,14 +79,13 @@ Python 3.11 ou plus récent, bibliothèque standard uniquement. Pas de `pip`, pa
 
 L'interface locale tient sur une page et fonctionne hors ligne. L'intégration continue passe les vérifications sur trois versions de Python, démarre réellement le conteneur et publie l'image sur GHCR.
 
-## Quatre commandes pour cloner, lancer et vérifier
+## Trois commandes pour cloner, lancer et vérifier
 
 ```bash
 git clone https://github.com/Sophie-H25/archiviste
 cd archiviste
 python -m archiviste servir --ouvrir        # l'interface locale
 python -m archiviste executer echeances     # le même essai en terminal
-python -m unittest discover -s essais       # les 22 vérifications, 0,6 s
 ```
 
 ## Ce que je ne sais pas encore
