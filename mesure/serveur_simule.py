@@ -30,6 +30,25 @@ ANSWERS: dict[str, dict] = {
     "10": {"thought": "Lecture du contrat.", "tool": "document_lire", "args": {"path": "assurance-habitation.pdf"}},
 }
 
+# Réponses d'une boucle complète, utilisées quand la requête porte un champ ``tools`` :
+# elles imitent un modèle qui appelle ses outils proprement, sans inventer de nom.
+SEQUENCE: list[dict] = [
+    {"tool": "classeur_lister", "args": {"dir": "."}},
+    {"tool": "document_lire", "args": {"path": "controle-technique.txt"}},
+    {"tool": "document_lire", "args": {"path": "garantie-chaudiere.docx"}},
+    {"tool": "document_lire", "args": {"path": "assurance-auto.eml"}},
+    {"tool": "document_lire", "args": {"path": "assurance-habitation.pdf"}},
+    {"tool": "document_lire", "args": {"path": "abonnement-salle.csv"}},
+    {"tool": "echeance_ajouter", "args": {"kind": "controle_technique", "label": "Contrôle technique AB-123-CD", "due": "2027-01-12", "source": "controle-technique.txt"}},
+    {"tool": "echeance_ajouter", "args": {"kind": "garantie", "label": "Garantie chaudière Thermorane", "due": "2027-02-28", "source": "garantie-chaudiere.docx"}},
+    {"tool": "echeance_ajouter", "args": {"kind": "assurance", "label": "Assurance auto", "due": "2027-04-15", "source": "assurance-auto.eml"}},
+    {"tool": "echeance_ajouter", "args": {"kind": "abonnement", "label": "Salle Forme Plus", "due": "2027-05-01", "source": "abonnement-salle.csv"}},
+    {"tool": "echeance_ajouter", "args": {"kind": "assurance", "label": "Assurance habitation", "due": "2027-06-30", "source": "assurance-habitation.pdf"}},
+    {"tool": "rapport_ecrire", "args": {"name": "echeances.md"}},
+    {"tool": "alerte_emettre", "args": {"within_days": 90}},
+    {"final": "Cinq échéances relevées, écrites au registre, rapport et alerte produits."},
+]
+
 
 class Handler(BaseHTTPRequestHandler):
     delay = 0.0
@@ -62,6 +81,37 @@ class Handler(BaseHTTPRequestHandler):
                 break
         if self.delay:
             time.sleep(self.delay)
+        if payload.get("tools"):
+            index = getattr(self.server, "boucle_index", 0)
+            etape = SEQUENCE[min(index, len(SEQUENCE) - 1)]
+            self.server.boucle_index = index + 1  # type: ignore[attr-defined]
+            if "final" in etape:
+                message = {"role": "assistant", "content": etape["final"]}
+                fin = "stop"
+            else:
+                message = {
+                    "role": "assistant",
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "id": f"call_{index}",
+                            "type": "function",
+                            "function": {"name": etape["tool"], "arguments": json.dumps(etape["args"], ensure_ascii=False)},
+                        }
+                    ],
+                }
+                fin = "tool_calls"
+            self._send(
+                {
+                    "id": "chatcmpl-sim",
+                    "object": "chat.completion",
+                    "model": payload.get("model", "simulated-local-model"),
+                    "choices": [{"index": 0, "message": message, "finish_reason": fin}],
+                    "usage": {"prompt_tokens": 900, "completion_tokens": 60, "total_tokens": 960},
+                }
+            )
+            return
+
         answer = ANSWERS.get(marker, {"thought": "hors jeu de test", "final": "réponse simulée"})
         self._send(
             {
@@ -87,6 +137,7 @@ def main() -> int:
     args = parser.parse_args()
     Handler.delay = args.delay
     httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
+    httpd.boucle_index = 0
     print(f"endpoint simulé sur http://127.0.0.1:{args.port}/v1 (aucune mesure réelle)")
     try:
         httpd.serve_forever()

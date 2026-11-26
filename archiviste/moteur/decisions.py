@@ -66,6 +66,45 @@ def list_models(base_url: str, timeout: int = 15) -> dict[str, Any]:
     return {"base_url": base, "models": models}
 
 
+def schema_outils(outils: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Traduit les signatures maison en JSON Schema pour le paramètre ``tools``.
+
+    Un modèle de 7B tient beaucoup mieux un contrat donné par l'API qu'une liste
+    d'outils décrite en français dans la consigne : c'est la différence entre
+    « il invente document_examiner » et « il appelle echeance_ajouter ».
+    """
+    schema = []
+    for outil in outils:
+        signature = outil["signature"]
+        nom = signature.split("(")[0].strip()
+        interieur = signature[signature.index("(") + 1 : signature.rindex(")")]
+        proprietes: dict[str, Any] = {}
+        requis: list[str] = []
+        for morceau in (m.strip() for m in interieur.split(",")):
+            if not morceau:
+                continue
+            if "=" in morceau:
+                parametre, defaut = morceau.split("=", 1)
+                defaut = defaut.strip().strip("'\"")
+                type_ = "integer" if defaut.isdigit() else "string"
+                parametre = parametre.strip()
+            else:
+                parametre, type_ = morceau, "string"
+                requis.append(parametre)
+            proprietes[parametre] = {"type": type_}
+        schema.append(
+            {
+                "type": "function",
+                "function": {
+                    "name": nom,
+                    "description": outil["doc"],
+                    "parameters": {"type": "object", "properties": proprietes, "required": requis},
+                },
+            }
+        )
+    return schema
+
+
 class PlanificateurEnregistre:
     def __init__(self, steps: list[dict[str, Any]]) -> None:
         self.steps = list(steps)
@@ -102,12 +141,17 @@ class PlanificateurModele:
         self.outils = tools
 
     def system_prompt(self) -> str:
-        table = "\n".join(f"- {t['signature']} — {t['doc']}" for t in self.outils)
+        if self.outils:
+            outils = ("Les outils sont fournis par l'API : utilise exactement ces noms et ces paramètres, "
+                      "sans en inventer ni les traduire.")
+        else:
+            outils = "Outils disponibles :\n" + "\n".join(
+                f"- {t['signature']} — {t['doc']}" for t in self.outils)
         return (
-            "Tu es Archiviste, un agent local qui gère le archiviste administratif d'un foyer.\n"
+            "Tu es Archiviste, un agent local qui gère le classeur administratif d'un foyer.\n"
             "Ton domaine : documents personnels (assurances, contrôle technique, garanties, abonnements, taxes).\n"
-            "Tu travailles uniquement sur les fichiers du atelier du run, tu n'as aucun accès réseau.\n\n"
-            f"Outils disponibles :\n{table}\n\n{CONTRAT_JSON}"
+            "Tu travailles uniquement sur les fichiers de l'atelier du run, tu n'as aucun accès réseau.\n\n"
+            f"{outils}\n\n{CONTRAT_JSON}"
         )
 
     def documents_lus(self, history: list[dict[str, Any]], budget_chars: int = 4200) -> str:
@@ -156,7 +200,7 @@ class PlanificateurModele:
         return "\n".join(lines)
 
     def next_step(self, objective: str, history: list[dict[str, Any]]) -> dict[str, Any]:
-        payload = {
+        payload: dict[str, Any] = {
             "model": self.model,
             "temperature": self.temperature,
             "messages": [
@@ -164,6 +208,9 @@ class PlanificateurModele:
                 {"role": "user", "content": self.user_prompt(objective, history)},
             ],
         }
+        if self.outils:
+            payload["tools"] = schema_outils(self.outils)
+            payload["tool_choice"] = "auto"
         try:
             response = _post_json(self.url, payload, self.api_key, self.timeout)
         except urllib.error.URLError as exc:
@@ -171,11 +218,27 @@ class PlanificateurModele:
         except (TimeoutError, json.JSONDecodeError) as exc:
             return {"thought": "backend en échec", "final": f"Réponse du backend illisible ou trop lente : {exc}"}
         try:
-            content = response["choices"][0]["message"]["content"]
+            message = response["choices"][0]["message"]
         except (KeyError, IndexError, TypeError):
             return {"thought": "réponse inattendue", "final": f"Réponse non conforme du backend : {str(response)[:300]}"}
         self.last_usage = response.get("usage") or {}
-        return parse_step(content)
+
+        appels = message.get("tool_calls") or []
+        if appels:
+            fonction = (appels[0] or {}).get("function") or {}
+            arguments = fonction.get("arguments")
+            if isinstance(arguments, str):
+                try:
+                    arguments = json.loads(arguments) if arguments.strip() else {}
+                except json.JSONDecodeError:
+                    arguments = {}
+            return {
+                "thought": str(message.get("content") or "").strip()[:400],
+                "tool": fonction.get("name"),
+                "args": arguments if isinstance(arguments, dict) else {},
+            }
+
+        return parse_step(message.get("content") or "")
 
 
 def parse_step(content: str) -> dict[str, Any]:
@@ -183,7 +246,11 @@ def parse_step(content: str) -> dict[str, Any]:
     text = re.sub(r"^```(?:json)?|```$", "", text, flags=re.MULTILINE).strip()
     start, end = text.find("{"), text.rfind("}")
     if start < 0 or end <= start:
-        return {"thought": "sortie non structurée", "tool": "__unparsable__", "args": {}}
+        # Un modèle qui répond en prose termine la passe : c'est une conclusion,
+        # pas un appel d'outil raté.
+        if text:
+            return {"thought": "réponse en prose", "final": text[:800]}
+        return {"thought": "sortie vide", "tool": "__unparsable__", "args": {}}
     try:
         step = json.loads(text[start : end + 1])
     except json.JSONDecodeError:

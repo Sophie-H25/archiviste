@@ -210,3 +210,44 @@ class TestHttpApi(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestModeleSimule(unittest.TestCase):
+    """Le mode modèle sans modèle : un serveur qui répond en `tool_calls`.
+
+    Ce test prouve que le chemin `tools` de l'API est branché de bout en bout,
+    sans GPU ni modèle téléchargé : le serveur simulé renvoie des appels d'outils
+    valides, la boucle les exécute et le registre se remplit.
+    """
+
+    def setUp(self) -> None:
+        import threading
+        from http.server import ThreadingHTTPServer
+
+        from mesure.serveur_simule import Handler
+
+        self.serveur = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.serveur.boucle_index = 0
+        threading.Thread(target=self.serveur.serve_forever, daemon=True).start()
+        self.url = f"http://127.0.0.1:{self.serveur.server_address[1]}"
+
+    def tearDown(self) -> None:
+        self.serveur.shutdown()
+        self.serveur.server_close()
+
+    def test_boucle_modele_ecrit_le_registre(self) -> None:
+        result = noyau.executer_scenario(
+            "echeances",
+            mode="modele",
+            modele={"base_url": self.url, "model": "simule"},
+            runs_dir=RUNS / "modele",
+        )
+        self.assertEqual(result["status"], "done", result["status"])
+        self.assertEqual(result["errors"], 0, [e.get("observation") for e in result["steps"] if not e["ok"]])
+        self.assertNotIn("__unparsable__", [e["tool"] for e in result["steps"]])
+        noms = [a["name"] for a in result["artifacts"]]
+        self.assertIn("registre.json", noms)
+        self.assertIn("livrables/echeances.md", noms)
+        rapport = (Path(result["run_dir"]) / "atelier" / "livrables" / "echeances.md").read_text(encoding="utf-8")
+        self.assertIn("2027-01-12", rapport)
+        self.assertIn("2027-06-30", rapport)

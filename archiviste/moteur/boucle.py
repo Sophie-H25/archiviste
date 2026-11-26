@@ -409,6 +409,9 @@ def executer_scenario(
                 api_key=config.get("api_key"),
                 timeout=int(config.get("timeout", 180)),
             )
+            # Les signatures partent dans le champ `tools` de l'API : c'est ce contrat
+            # qu'un modèle de 7B tient, bien mieux qu'une liste écrite en consigne.
+            planificateur.attach_tools(registre.specs())
         else:
             conducteur = json.loads((Path(scen["_dir"]) / entry["conducteur"]).read_text(encoding="utf-8"))
             planificateur = PlanificateurEnregistre(conducteur.get("steps", conducteur))
